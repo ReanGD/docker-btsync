@@ -12,7 +12,7 @@ RUN apt-get update && \
     rm /tmp/btsync.tar.gz && \
     mkdir -p /btsync/storage && \   
     \
-    apt-get purge curl && \
+    apt-get purge -y curl && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/cache/apt/* && \
