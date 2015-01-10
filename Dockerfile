@@ -5,15 +5,15 @@ MAINTAINER ReanGD
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
-	apt-get install -y curl && \
-	\
-	curl -o /tmp/btsync.tar.gz http://download.getsyncapp.com/endpoint/btsync/os/linux-x64/track/stable && \
-	tar -xf /tmp/btsync.tar.gz -C /usr/bin && \
-	rm /tmp/btsync.tar.gz && \
-	mkdir -p /btsync/storage && \	
-	\
-	apt-get purge curl && \
-	apt-get autoremove && \
+    apt-get install -y curl && \
+    \
+    curl -o /tmp/btsync.tar.gz http://download.getsyncapp.com/endpoint/btsync/os/linux-x64/track/stable && \
+    tar -xf /tmp/btsync.tar.gz -C /usr/bin && \
+    rm /tmp/btsync.tar.gz && \
+    mkdir -p /btsync/storage && \   
+    \
+    apt-get purge curl && \
+    apt-get autoremove && \
     apt-get clean && \
     rm -rf /var/cache/apt/* && \
     rm -rf /var/lib/apt/* && \
