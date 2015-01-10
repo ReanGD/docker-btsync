@@ -1,1 +1,1 @@
-docker run --rm -it -p 80:8080 -p 50000:50000/udp -v /home/btsync:/btsync -v /etc/localtime:/etc/localtime:ro reangd/btsync:latest
+docker run --rm -it -p 80:8080 -p 50000:50000/udp -v /home/btsync:/btsync -e "LANG=ru_RU.UTF-8" -v /etc/localtime:/etc/localtime:ro reangd/btsync:latest
