@@ -21,4 +21,4 @@ set -e
 }
 EOF
 
-/btsync --nodaemon --log /btsync/btsync.log --config /btsync/btsync.conf
+/usr/bin/btsync --nodaemon --log /btsync/btsync.log --config /btsync/btsync.conf
