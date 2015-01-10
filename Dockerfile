@@ -13,7 +13,7 @@ RUN apt-get update && \
     mkdir -p /btsync/storage && \   
     \
     apt-get purge curl && \
-    apt-get autoremove && \
+    apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/cache/apt/* && \
     rm -rf /var/lib/apt/* && \
