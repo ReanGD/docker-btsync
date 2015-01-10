@@ -3,6 +3,7 @@ FROM debian:jessie
 MAINTAINER ReanGD
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV LANG ru_RU.UTF-8
 
 RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen && \
     echo ru_RU.UTF-8 UTF-8 >> /etc/locale.gen && \
@@ -13,7 +14,6 @@ RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen && \
     curl -o /tmp/btsync.tar.gz http://download.getsyncapp.com/endpoint/btsync/os/linux-x64/track/stable && \
     tar -xf /tmp/btsync.tar.gz -C /usr/bin && \
     rm /tmp/btsync.tar.gz && \
-    mkdir -p /btsync/storage && \   
     \
     apt-get purge -y curl && \
     apt-get autoremove -y && \
