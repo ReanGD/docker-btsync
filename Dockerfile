@@ -4,19 +4,21 @@ MAINTAINER ReanGD
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LANG ru_RU.UTF-8
+ENV LANGUAGE ru_RU.UTF-8
+
+ADD http://download.getsyncapp.com/endpoint/btsync/os/linux-x64/track/stable /home/btsync.tar.gz
+ADD run.sh /home/run.sh
+ADD btsync.conf /home/btsync.conf
 
 RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen && \
     echo ru_RU.UTF-8 UTF-8 >> /etc/locale.gen && \
     \
     apt-get update && \
-    apt-get install -y curl locales && \
+    apt-get install -y locales && \
     \
-    curl -o /tmp/btsync.tar.gz http://download.getsyncapp.com/endpoint/btsync/os/linux-x64/track/stable && \
-    tar -xf /tmp/btsync.tar.gz -C /usr/bin && \
-    rm /tmp/btsync.tar.gz && \
+    tar -xf /home/btsync.tar.gz -C /home && \
+    rm /home/btsync.tar.gz && \
     \
-    apt-get purge -y curl && \
-    apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/cache/apt/* && \
     rm -rf /var/lib/apt/* && \
@@ -30,8 +32,6 @@ RUN echo en_US.UTF-8 UTF-8 > /etc/locale.gen && \
     rm -rf /usr/sbin/locale-gen && \
     rm -rf /usr/sbin/update-locale && \
     rm -rf /usr/sbin/validlocale
-
-ADD run.sh /home/run.sh
 
 EXPOSE 8080
 EXPOSE 50000/udp
