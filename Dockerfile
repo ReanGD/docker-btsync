@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LANG ru_RU.UTF-8
 ENV LANGUAGE ru_RU.UTF-8
 
-ADD http://download.getsyncapp.com/endpoint/btsync/os/linux-x64/track/stable /home/btsync.tar.gz
+ADD https://download-cdn.getsyncapp.com/stable/linux-x64/BitTorrent-Sync_x64.tar.gz /home/btsync.tar.gz
 ADD run.sh /home/run.sh
 ADD btsync.conf /home/btsync.conf
 
