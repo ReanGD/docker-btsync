@@ -13,4 +13,4 @@ EXPOSE 80
 
 VOLUME ["/btsync"]
 
-CMD run.sh
+CMD /bin/run.sh
