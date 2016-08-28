@@ -1,1 +1,8 @@
-docker run --rm -it -p 80:8080 -p 50000:50000/udp --volumes-from media-store -v /home/btsync:/btsync -v /etc/localtime:/etc/localtime:ro reangd/btsync:latest
+docker-btsync
+===
+
+The docker image with btsync on Alpine Linux.
+
+```
+docker run -d --name=btsync -p 80:80 -v /home/btsync:/btsync -v /etc/localtime:/etc/localtime:ro reangd/btsync:latest
+```
