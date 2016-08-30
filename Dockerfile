@@ -10,7 +10,8 @@ RUN apk --no-cache add curl && \
 	curl -L https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-2.23-r3.apk -o glibc-2.23-r3.apk && \
 	apk add --allow-untrusted glibc-2.23-r3.apk && \
 	apk del --purge curl && \
-	rm glibc-2.23-r3.apk /bin/README /bin/LICENSE.TXT
+	rm glibc-2.23-r3.apk /bin/README /bin/LICENSE.TXT && \
+	mkdir /btsync
 
 EXPOSE 80
 
