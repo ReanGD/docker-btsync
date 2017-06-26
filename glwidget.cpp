@@ -1,28 +1,41 @@
 #include "glwidget.h"
-#include "helper.h"
-
+#include "scene.h"
 #include <QPaintEvent>
 #include <QPainter>
-#include <QTimer>
 
-GLWidget::GLWidget(Helper *helper, QWidget *parent)
-    : QOpenGLWidget(parent)
-    , helper(helper)
-{
-    setFixedSize(800, 600);
-    setAutoFillBackground(false);
+
+GLWidget::GLWidget(QWidget *parent)
+  : QOpenGLWidget(parent)
+  , m_scene(std::make_shared<Scene>()) {
+
+  setFixedSize(800, 600);
+  setAutoFillBackground(false);
 }
 
-void GLWidget::animate()
-{
-    update();
+void GLWidget::animate() {
+  update();
 }
 
-void GLWidget::paintEvent(QPaintEvent *event)
-{
-    QPainter painter;
-    painter.begin(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    helper->paint(&painter, event->rect());
-    painter.end();
+void GLWidget::drawScene(QPainter* painter) {
+  QPen botPen = QPen(Qt::white);
+  painter->setPen(botPen);
+  botPen.setWidth(1);
+
+  QBrush botBrush = QBrush(Qt::white);
+  painter->setBrush(botBrush);
+
+  QSize botSize = QSize(5, 5);
+  for(Position& pos :m_scene->update()) {
+    QPoint topleft(pos.m_x * 5, pos.m_y * 5);
+    painter->drawRect(QRect(topleft, botSize));
+  }
+}
+
+void GLWidget::paintEvent(QPaintEvent *event) {
+  QPainter painter;
+  painter.begin(this);
+  painter.setRenderHint(QPainter::Antialiasing);
+  painter.fillRect(event->rect(), QBrush(QColor(0x0, 0x0, 0x0)));
+  drawScene(&painter);
+  painter.end();
 }

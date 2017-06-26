@@ -1,11 +1,9 @@
 QT          += widgets
 
 HEADERS     = glwidget.h \
-              helper.h \
-              widget.h \
-              window.h
+              window.h \
+    scene.h
 SOURCES     = glwidget.cpp \
-              helper.cpp \
               main.cpp \
-              widget.cpp \
-              window.cpp
+              window.cpp \
+    scene.cpp

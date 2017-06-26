@@ -1,16 +1,17 @@
 #pragma once
+#include <memory>
 #include <QOpenGLWidget>
 
-class Helper;
-class GLWidget : public QOpenGLWidget
-{
+class Scene;
+class GLWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    GLWidget(Helper *helper, QWidget *parent);
+    GLWidget(QWidget *parent);
 public slots:
     void animate();
 protected:
+    void drawScene(QPainter* painter);
     void paintEvent(QPaintEvent *event) override;
 private:
-    Helper *helper;
+    std::shared_ptr<Scene> m_scene;
 };
