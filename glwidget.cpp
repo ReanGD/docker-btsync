@@ -6,9 +6,9 @@
 
 GLWidget::GLWidget(QWidget *parent)
   : QOpenGLWidget(parent)
-  , m_scene(std::make_shared<Scene>()) {
+  , m_scene(std::make_shared<Scene>(WIDTH / BOT_SIZE, HEIGHT / BOT_SIZE)) {
 
-  setFixedSize(800, 600);
+  setFixedSize(WIDTH, HEIGHT);
   setAutoFillBackground(false);
 }
 
@@ -24,9 +24,9 @@ void GLWidget::drawScene(QPainter* painter) {
   QBrush botBrush = QBrush(Qt::white);
   painter->setBrush(botBrush);
 
-  QSize botSize = QSize(5, 5);
+  QSize botSize = QSize(BOT_SIZE, BOT_SIZE);
   for(Position& pos :m_scene->update()) {
-    QPoint topleft(pos.m_x * 5, pos.m_y * 5);
+    QPoint topleft(pos.m_x * BOT_SIZE, pos.m_y * BOT_SIZE);
     painter->drawRect(QRect(topleft, botSize));
   }
 }
