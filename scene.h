@@ -8,44 +8,68 @@
 class Generator {
 public:
   Generator();
-  // [from; to)
-  uint16_t next(uint16_t from, uint16_t to);
+
+  // [0; to)
+  template<class T> T get(T to) {
+    return static_cast<T>(std::uniform_int_distribution<int>(0, static_cast<uint16_t>(to)-1)(m_generator));
+  }
 private:
-  std::random_device m_device;
   std::mt19937 m_generator;
 };
 
 struct Position {
-  uint16_t m_x;
-  uint16_t m_y;
+  uint16_t m_value;
 };
 
-struct SceneMeta {
-  SceneMeta(uint16_t width, uint16_t height);
+//struct Mass {
+//  void add(Mass other);
 
-  uint16_t m_width; // x
-  uint16_t m_height; // y
-  Generator m_generator;
+//  uint16_t m_value;
+//};
+
+enum class CellType : uint8_t {
+  Organism,
+//  Food,
+  Space,
+  Barrier,
+  Last
 };
 
-class Bot {
+struct Cell {
+  Cell() = delete;
+  Cell(CellType type);
+
+  CellType m_type;
+//  Mass m_mass;
+};
+
+class World {
 public:
-  Bot() = delete;
-  Bot(const std::shared_ptr<SceneMeta>& meta);
-
-  Position update();
-private:
-  std::shared_ptr<SceneMeta> m_meta;
-  Position m_position;
-};
-
-class Scene {
+  World() = delete;
+  World(uint16_t maxX, uint16_t maxY);
 public:
-  Scene() = delete;
-  Scene(uint16_t width, uint16_t height);
-
-  std::vector<Position> update();
+//  Cell& get(Position pos);
+  const std::vector<Cell>& step();
 private:
-  std::shared_ptr<SceneMeta> m_meta;
-  std::vector<Bot> m_bots;
+  uint16_t m_maxX;
+  uint16_t m_maxY;
+  Generator m_random;
+  std::vector<Cell> m_cells;
 };
+
+//enum class CommandType : uint8_t {
+//  MoveUp,
+//  MoveRight,
+//  MoveDown,
+//  MoveLeft,
+//  Last
+//};
+
+//class Organism {
+//public:
+//  Organism();
+
+//  void step(World& world, Cell& current);
+//private:
+//  std::array<CommandType> m_genome;
+//};

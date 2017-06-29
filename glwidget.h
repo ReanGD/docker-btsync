@@ -2,7 +2,7 @@
 #include <memory>
 #include <QOpenGLWidget>
 
-class Scene;
+class World;
 class GLWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
@@ -13,8 +13,10 @@ protected:
     void drawScene(QPainter* painter);
     void paintEvent(QPaintEvent *event) override;
 private:
-    const uint16_t WIDTH = 800;
-    const uint16_t HEIGHT = 600;
-    const uint16_t BOT_SIZE = 5;
-    std::shared_ptr<Scene> m_scene;
+    const uint16_t BOT_SIZE_PIXEL = 10;
+    const uint16_t MAX_X_PIXEL = 800;
+    const uint16_t MAX_Y_PIXEL = 600;
+    const uint16_t MAX_X = MAX_X_PIXEL / BOT_SIZE_PIXEL;
+    const uint16_t MAX_Y = MAX_Y_PIXEL / BOT_SIZE_PIXEL;
+    std::shared_ptr<World> m_world;
 };

@@ -3,12 +3,16 @@
 
 #include <QGridLayout>
 #include <QTimer>
+#include <QLabel>
 
 Window::Window() {
   setWindowTitle(tr("Evolution"));
-  GLWidget *openGL = new GLWidget(this);
+
   QGridLayout *layout = new QGridLayout;
-  layout->addWidget(openGL, 0, 1);
+
+  GLWidget *openGL = new GLWidget(this);
+  layout->addWidget(openGL, 1, 0);
+
   setLayout(layout);
 
   QTimer *timer = new QTimer(this);

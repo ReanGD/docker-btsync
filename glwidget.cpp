@@ -6,9 +6,9 @@
 
 GLWidget::GLWidget(QWidget *parent)
   : QOpenGLWidget(parent)
-  , m_scene(std::make_shared<Scene>(WIDTH / BOT_SIZE, HEIGHT / BOT_SIZE)) {
+  , m_world(std::make_shared<World>(MAX_X, MAX_Y)) {
 
-  setFixedSize(WIDTH, HEIGHT);
+  setFixedSize(MAX_X_PIXEL, MAX_Y_PIXEL);
   setAutoFillBackground(false);
 }
 
@@ -17,16 +17,23 @@ void GLWidget::animate() {
 }
 
 void GLWidget::drawScene(QPainter* painter) {
-  QPen botPen = QPen(Qt::white);
-  painter->setPen(botPen);
-  botPen.setWidth(1);
+  static const size_t cellTypes = static_cast<size_t>(CellType::Last);
+  static const QColor colors[cellTypes] = {Qt::red, Qt::blue, Qt::gray};
+  static const QSize botSize = QSize(BOT_SIZE_PIXEL, BOT_SIZE_PIXEL);
 
-  QBrush botBrush = QBrush(Qt::white);
-  painter->setBrush(botBrush);
+  painter->setPen(Qt::NoPen);
 
-  QSize botSize = QSize(BOT_SIZE, BOT_SIZE);
-  for(Position& pos :m_scene->update()) {
-    QPoint topleft(pos.m_x * BOT_SIZE, pos.m_y * BOT_SIZE);
+  int pos = 0;
+  for(const Cell& cell :m_world->step()) {
+    int x = pos % MAX_X;
+    int y = (pos - x) / MAX_X;
+    pos++;
+    QPoint topleft(x * BOT_SIZE_PIXEL, y * BOT_SIZE_PIXEL);
+
+    QColor color = colors[static_cast<size_t>(cell.m_type)];
+    QBrush brush = QBrush(color);
+    painter->setBrush(brush);
+
     painter->drawRect(QRect(topleft, botSize));
   }
 }
@@ -34,8 +41,8 @@ void GLWidget::drawScene(QPainter* painter) {
 void GLWidget::paintEvent(QPaintEvent *event) {
   QPainter painter;
   painter.begin(this);
-  painter.setRenderHint(QPainter::Antialiasing);
-  painter.fillRect(event->rect(), QBrush(QColor(0x0, 0x0, 0x0)));
+//  painter.setRenderHint(QPainter::Antialiasing);
+  painter.fillRect(event->rect(), QBrush(Qt::black));
   drawScene(&painter);
   painter.end();
 }
