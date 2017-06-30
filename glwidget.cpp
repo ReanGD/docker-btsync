@@ -12,7 +12,7 @@ GLWidget::GLWidget(QWidget *parent)
   setAutoFillBackground(false);
 }
 
-void GLWidget::animate() {
+void GLWidget::step() {
   update();
 }
 
@@ -41,7 +41,6 @@ void GLWidget::drawScene(QPainter* painter) {
 void GLWidget::paintEvent(QPaintEvent *event) {
   QPainter painter;
   painter.begin(this);
-//  painter.setRenderHint(QPainter::Antialiasing);
   painter.fillRect(event->rect(), QBrush(Qt::black));
   drawScene(&painter);
   painter.end();

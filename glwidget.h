@@ -7,8 +7,8 @@ class GLWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
     GLWidget(QWidget *parent);
-public slots:
-    void animate();
+public:
+    void step();
 protected:
     void drawScene(QPainter* painter);
     void paintEvent(QPaintEvent *event) override;
