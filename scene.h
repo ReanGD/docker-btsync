@@ -1,9 +1,9 @@
 #pragma once
-#include <cstdint>
 #include <random>
 #include <memory>
 #include <vector>
 #include <forward_list>
+#include "math.h"
 
 
 struct Generator {
@@ -13,19 +13,6 @@ struct Generator {
   }
 private:
   std::mt19937 m_generator = std::mt19937(std::random_device()());
-};
-
-enum class Direction : uint8_t {
-  Up,
-  Right,
-  Down,
-  Left,
-  Last
-};
-
-struct Position {
-  void move(Direction direction, uint32_t lineSize, uint32_t maxPos);
-  uint32_t m_value;
 };
 
 //struct Mass {
@@ -51,10 +38,14 @@ struct Cell {
 };
 
 enum class CommandCode : uint8_t {
-  MoveUp,
+  MoveForward = 0u,
+  MoveForwardRight,
   MoveRight,
-  MoveDown,
+  MoveBackwardRight,
+  MoveBackward,
+  MoveBackwardLeft,
   MoveLeft,
+  MoveForwardLeft,
   Last
 };
 
@@ -73,12 +64,12 @@ private:
 class World {
 public:
   World() = delete;
-  World(uint32_t maxX, uint32_t maxY);
+  World(uint16_t maxX, uint16_t maxY);
 public:
   const std::vector<Cell>& step();
 private:
-  uint32_t m_maxX;
-  uint32_t m_maxY;
+  uint16_t m_maxX;
+  uint16_t m_maxY;
   Generator m_random;
   std::vector<Cell> m_cells;
   std::forward_list<std::unique_ptr<Organism>> m_organisms;

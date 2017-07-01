@@ -23,7 +23,7 @@ Window::Window() {
   setLayout(layout);
 
   m_start = std::chrono::steady_clock::now();
-  QTimer::singleShot(50, this, &Window::step);
+  QTimer::singleShot(10, this, &Window::step);
 }
 
 void Window::step() {
@@ -38,5 +38,5 @@ void Window::step() {
 
   m_glWidget->step();
   m_step++;
-  QTimer::singleShot(50, this, &Window::step);
+  QTimer::singleShot(10, this, &Window::step);
 }
