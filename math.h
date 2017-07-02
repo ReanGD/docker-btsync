@@ -17,13 +17,11 @@ Direction operator+(Direction first, Direction second);
 
 struct Position {
   Position() = delete;
-  Position(uint32_t coord, uint32_t maxCoord, uint16_t lineSize, Direction direction);
+  Position(uint32_t coord, Direction direction);
 
   void move(Direction direction);
   void turn(Direction direction);
 
   uint32_t m_coord;
-  uint32_t m_maxCoord;
-  uint16_t m_lineSize;
   Direction m_direction;
 };

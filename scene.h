@@ -63,13 +63,11 @@ private:
 
 class World {
 public:
-  World() = delete;
-  World(uint16_t maxX, uint16_t maxY);
+  World();
 public:
-  const std::vector<Cell>& step();
+  void step();
+  const std::vector<Cell>& cells() { return m_cells; }
 private:
-  uint16_t m_maxX;
-  uint16_t m_maxY;
   Generator m_random;
   std::vector<Cell> m_cells;
   std::forward_list<std::unique_ptr<Organism>> m_organisms;

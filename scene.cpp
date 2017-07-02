@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "settings.h"
 
 
 Cell::Cell(CellType type)
@@ -18,19 +19,16 @@ CommandCode Organism::next() {
   return m_genome[m_commandPos++];
 }
 
-World::World(uint16_t maxX, uint16_t maxY)
-  : m_maxX(maxX)
-  , m_maxY(maxY)
-  , m_cells(maxX * maxY, Cell(CellType::Space)) {
+World::World()
+  : m_cells(Settings::m_worldMaxCoord, Cell(CellType::Space)) {
 
-  const size_t botsCount = 100;
-  const uint32_t maxCoord = maxX * maxY;
+  const size_t botsCount = 500;
   for(size_t i=0; i!=botsCount; ++i) {
     Direction direction(m_random.get(Direction::Last));
     while(true) {
-      uint32_t coord = m_random.get(maxCoord);
+      auto coord = m_random.get(Settings::m_worldMaxCoord);
       if (m_cells[coord].m_type == CellType::Space) {
-        m_organisms.push_front(std::make_unique<Organism>(m_random, Position(coord, maxCoord, maxX, direction)));
+        m_organisms.push_front(std::make_unique<Organism>(m_random, Position(coord, direction)));
         m_cells[coord].m_type = CellType::Organism;
         break;
       }
@@ -38,7 +36,7 @@ World::World(uint16_t maxX, uint16_t maxY)
   }
 }
 
-const std::vector<Cell>& World::step() {
+void World::step() {
   for (auto& organism: m_organisms) {
     Position pos = organism->m_position;
     CommandCode code = organism->next();
@@ -76,6 +74,4 @@ const std::vector<Cell>& World::step() {
       organism->m_position = pos;
     }
   }
-
-  return m_cells;
 }
