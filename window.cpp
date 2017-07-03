@@ -28,8 +28,8 @@ Window::Window()
 }
 
 void Window::step() {
-  const uint32_t updatePerStep = 20000;
-  const uint32_t drawPerStep = 1000;
+  const uint32_t updatePerStep = 100;
+  const uint32_t drawPerStep = 5;
 
   if (m_step % updatePerStep == 0) {
     auto now = std::chrono::steady_clock::now();
@@ -50,5 +50,5 @@ void Window::step() {
     m_glWidget->update();
   }
   m_step++;
-  QTimer::singleShot(0, this, &Window::step);
+  QTimer::singleShot(10, this, &Window::step);
 }

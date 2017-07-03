@@ -4,6 +4,7 @@
 #include <vector>
 #include <forward_list>
 #include "math.h"
+#include "NeuralNetwork.h"
 
 
 struct Generator {
@@ -51,14 +52,13 @@ enum class CommandCode : uint8_t {
 
 struct Organism {
   Organism() = delete;
-  Organism(Generator& random, Position position);
+  Organism(Position position, FGenerator& generator);
 
-  CommandCode next();
+  CommandCode calc(const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells);
 
   Position m_position;
 private:
-  std::array<CommandCode, 64> m_genome;
-  uint8_t m_commandPos = 0;
+  NeuralNetwork m_network;
 };
 
 class World {
