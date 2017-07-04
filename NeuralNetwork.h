@@ -1,22 +1,13 @@
 #pragma once
-#include <cstdint>
 #include <memory>
 #include <vector>
-#include <random>
+#include "math.h"
 
-struct FGenerator {
-  // [0; to]
-  float get(float to) {
-    return std::uniform_real_distribution<float>(0, to)(m_generator);
-  }
-private:
-  std::mt19937 m_generator = std::mt19937(std::random_device()());
-};
 
 class Neuron {
 public:
   Neuron() = delete;
-  Neuron(uint16_t inputCnt, FGenerator& generator);
+  Neuron(uint16_t inputCnt, Generator& generator);
 public:
   float calc(const std::shared_ptr<float[]>& inputs);
 private:
@@ -27,7 +18,7 @@ private:
 class Layer {
 public:
   Layer() = delete;
-  Layer(uint16_t inputCnt, uint16_t neuronCnt, FGenerator& generator);
+  Layer(uint16_t inputCnt, uint16_t neuronCnt, Generator& generator);
 public:
   std::shared_ptr<float[]> calc(const std::shared_ptr<float[]>& inputs);
 private:
@@ -36,7 +27,7 @@ private:
 
 class NeuralNetwork {
 public:
-  NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, FGenerator& generator);
+  NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, Generator& generator);
 public:
   float calc(const std::shared_ptr<float[]>& inputs);
 private:

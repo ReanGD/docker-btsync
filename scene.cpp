@@ -7,7 +7,7 @@ Cell::Cell(CellType type)
 
 }
 
-Organism::Organism(Position position, FGenerator& generator)
+Organism::Organism(Position position, Generator& generator)
   : m_position(position)
   , m_network(8, 8, generator) {
 }
@@ -47,14 +47,13 @@ CommandCode Organism::calc(const std::array<Cell*, static_cast<size_t>(Direction
 World::World()
   : m_cells(Settings::m_worldMaxCoord, Cell(CellType::Space)) {
 
-  FGenerator generator;
   const size_t botsCount = 500;
   for(size_t i=0; i!=botsCount; ++i) {
     Direction direction(m_random.get(Direction::Last));
     while(true) {
       auto coord = m_random.get(Settings::m_worldMaxCoord);
       if (m_cells[coord].m_type == CellType::Space) {
-        m_organisms.push_front(std::make_unique<Organism>(Position(coord, direction), generator));
+        m_organisms.push_front(std::make_unique<Organism>(Position(coord, direction), m_random));
         m_cells[coord].m_type = CellType::Organism;
         break;
       }

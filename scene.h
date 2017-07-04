@@ -1,20 +1,10 @@
 #pragma once
-#include <random>
 #include <memory>
 #include <vector>
 #include <forward_list>
 #include "math.h"
 #include "NeuralNetwork.h"
 
-
-struct Generator {
-  // [0; to)
-  template<class T> T get(T to) {
-    return static_cast<T>(std::uniform_int_distribution<int>(0, static_cast<uint16_t>(to)-1)(m_generator));
-  }
-private:
-  std::mt19937 m_generator = std::mt19937(std::random_device()());
-};
 
 //struct Mass {
 //  void add(Mass other);
@@ -52,7 +42,7 @@ enum class CommandCode : uint8_t {
 
 struct Organism {
   Organism() = delete;
-  Organism(Position position, FGenerator& generator);
+  Organism(Position position, Generator& generator);
 
   CommandCode calc(const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells);
 

@@ -1,13 +1,13 @@
 #include "NeuralNetwork.h"
 
 
-Neuron::Neuron(uint16_t inputCnt, FGenerator& generator)
+Neuron::Neuron(uint16_t inputCnt, Generator& generator)
   : m_inputCnt(inputCnt)
   , m_weights(new float[inputCnt]) {
 
   float *ptr = m_weights.get();
   for (uint16_t i=0; i!=inputCnt; ++i) {
-    ptr[i] = generator.get(1.0f);
+    ptr[i] = generator.getf(1.0f);
   }
 }
 
@@ -23,7 +23,7 @@ float Neuron::calc(const std::shared_ptr<float[]>& inputs) {
   return out / (1 + abs(out));
 }
 
-Layer::Layer(uint16_t inputCnt, uint16_t neuronCnt, FGenerator& generator) {
+Layer::Layer(uint16_t inputCnt, uint16_t neuronCnt, Generator& generator) {
   for (uint16_t i=0; i!=neuronCnt; ++i) {
     m_neurons.emplace_back(inputCnt, generator);
   }
@@ -38,7 +38,7 @@ std::shared_ptr<float[]> Layer::calc(const std::shared_ptr<float[]> &inputs) {
   return output;
 }
 
-NeuralNetwork::NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, FGenerator& generator)
+NeuralNetwork::NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, Generator& generator)
   : m_layer0(inputCnt, neuronLayer0Cnt, generator)
   , m_output(neuronLayer0Cnt, generator) {
 

@@ -1,5 +1,23 @@
 #pragma once
 #include <cstdint>
+#include <random>
+
+
+struct Generator {
+  // [0; to)
+  template<class T> T get(T to) {
+    return static_cast<T>(std::uniform_int_distribution<int>(0, static_cast<int>(to)-1)(m_generator));
+  }
+
+  // [0; to]
+  float getf(float to) {
+    return std::uniform_real_distribution<float>(0, to)(m_generator);
+  }
+
+private:
+  std::mt19937 m_generator = std::mt19937(std::random_device()());
+};
+
 
 enum class Direction : uint8_t {
   Forward = 0u,
