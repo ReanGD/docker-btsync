@@ -28,26 +28,16 @@ struct Cell {
 //  Mass m_mass;
 };
 
-enum class CommandCode : uint8_t {
-  MoveForward = 0u,
-  MoveForwardRight,
-  MoveRight,
-  MoveBackwardRight,
-  MoveBackward,
-  MoveBackwardLeft,
-  MoveLeft,
-  MoveForwardLeft,
-  Last
-};
-
+class World;
 struct Organism {
   Organism() = delete;
   Organism(Position position, Generator& generator);
 
-  CommandCode calc(const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells);
-
-  Position m_position;
+  void calc(World* word, const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells);
+  Position getPosition() const { return m_position; }
 private:
+  Position m_position;
+  Direction m_direction;
   NeuralNetwork m_network;
 };
 
@@ -56,6 +46,7 @@ public:
   World();
 public:
   void step();
+  bool move(Position from, Position to);
   const std::vector<Cell>& cells() { return m_cells; }
 private:
   Generator m_random;

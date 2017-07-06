@@ -9,10 +9,11 @@ Cell::Cell(CellType type)
 
 Organism::Organism(Position position, Generator& generator)
   : m_position(position)
+  , m_direction(generator.get(Direction::Last))
   , m_network(8, 8, generator) {
 }
 
-CommandCode Organism::calc(const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells) {
+void Organism::calc(World* word, const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells) {
   auto inputs = std::shared_ptr<float[]>(new float[static_cast<size_t>(Direction::Last)]);
   size_t i=0;
   for (const auto cell :cells) {
@@ -20,28 +21,30 @@ CommandCode Organism::calc(const std::array<Cell*, static_cast<size_t>(Direction
   }
 
   float result = m_network.calc(inputs);
+  Direction directionMove;
   if (result < 1.0f/8.0f) {
-    return CommandCode::MoveForward;
+    directionMove = Direction::Forward;
+  } else if (result < 2.0f/8.0f) {
+    directionMove = Direction::ForwardRight;
+  } else if (result < 3.0f/8.0f) {
+    directionMove = Direction::Right;
+  } else if (result < 4.0f/8.0f) {
+    directionMove = Direction::BackwardRight;
+  } else if (result < 5.0f/8.0f) {
+    directionMove = Direction::Backward;
+  } else if (result < 6.0f/8.0f) {
+    directionMove = Direction::BackwardLeft;
+  } else if (result < 7.0f/8.0f) {
+    directionMove = Direction::Left;
+  } else {
+    directionMove = Direction::ForwardLeft;
   }
-  if (result < 2.0f/8.0f) {
-    return CommandCode::MoveForwardRight;
+
+  Position newPosition = m_position;
+  newPosition.move(directionMove + m_direction);
+  if (word->move(m_position, newPosition)) {
+    m_position = newPosition;
   }
-  if (result < 3.0f/8.0f) {
-    return CommandCode::MoveRight;
-  }
-  if (result < 4.0f/8.0f) {
-    return CommandCode::MoveBackwardRight;
-  }
-  if (result < 5.0f/8.0f) {
-    return CommandCode::MoveBackward;
-  }
-  if (result < 6.0f/8.0f) {
-    return CommandCode::MoveBackwardLeft;
-  }
-  if (result < 7.0f/8.0f) {
-    return CommandCode::MoveLeft;
-  }
-  return CommandCode::MoveForwardLeft;
 }
 
 World::World()
@@ -49,11 +52,10 @@ World::World()
 
   const size_t botsCount = 500;
   for(size_t i=0; i!=botsCount; ++i) {
-    Direction direction(m_random.get(Direction::Last));
     while(true) {
       auto coord = m_random.get(Settings::m_worldMaxCoord);
       if (m_cells[coord].m_type == CellType::Space) {
-        m_organisms.push_front(std::make_unique<Organism>(Position(coord, direction), m_random));
+        m_organisms.push_front(std::make_unique<Organism>(Position(coord), m_random));
         m_cells[coord].m_type = CellType::Organism;
         break;
       }
@@ -63,7 +65,7 @@ World::World()
 
 void World::step() {
   for (auto& organism: m_organisms) {
-    Position pos = organism->m_position;
+    Position pos = organism->getPosition();
 
     Cell barrier(CellType::Barrier);
     std::array<Cell*, static_cast<size_t>(Direction::Last)> cells;
@@ -76,39 +78,16 @@ void World::step() {
         cells[i] = &m_cells[copyPos.m_coord];
       }
     }
-    CommandCode code = organism->calc(cells);
-    switch (code) {
-    case CommandCode::MoveForward:
-      pos.move(Direction::Forward);
-      break;
-    case CommandCode::MoveForwardRight:
-      pos.move(Direction::ForwardRight);
-      break;
-    case CommandCode::MoveRight:
-      pos.move(Direction::Right);
-      break;
-    case CommandCode::MoveBackwardRight:
-      pos.move(Direction::BackwardRight);
-      break;
-    case CommandCode::MoveBackward:
-      pos.move(Direction::Backward);
-      break;
-    case CommandCode::MoveBackwardLeft:
-      pos.move(Direction::BackwardLeft);
-      break;
-    case CommandCode::MoveLeft:
-      pos.move(Direction::Left);
-      break;
-    case CommandCode::MoveForwardLeft:
-      pos.move(Direction::ForwardLeft);
-      break;
-    default:
-      break;
-    }
-    if (m_cells[pos.m_coord].m_type == CellType::Space) {
-      m_cells[organism->m_position.m_coord].m_type = CellType::Space;
-      m_cells[pos.m_coord].m_type = CellType::Organism;
-      organism->m_position = pos;
-    }
+    organism->calc(this, cells);
   }
+}
+
+bool World::move(Position from, Position to) {
+  if (m_cells[to].m_type == CellType::Space) {
+    m_cells[from].m_type = CellType::Space;
+    m_cells[to].m_type = CellType::Organism;
+    return true;
+  }
+
+  return false;
 }

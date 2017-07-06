@@ -6,18 +6,15 @@ Direction operator+(Direction first, Direction second) {
   return static_cast<Direction>((static_cast<uint8_t>(first) + static_cast<uint8_t>(second)) % static_cast<uint8_t>(Direction::Last));
 }
 
-Position::Position(uint32_t coord, Direction direction)
-  : m_coord(coord % Settings::m_worldMaxCoord)
-  , m_direction(direction) {
+Position::Position(uint32_t coord)
+  : m_coord(coord % Settings::m_worldMaxCoord) {
 }
 
 void Position::move(Direction direction) {
   static const uint16_t lineSize = Settings::m_worldMaxX;
   static const uint32_t maxCoord = Settings::m_worldMaxCoord;
 
-  Direction absoluteDir = direction + m_direction;
-
-  switch (absoluteDir) {
+  switch (direction) {
   case Direction::Forward:
   case Direction::ForwardRight:
   case Direction::ForwardLeft:
@@ -40,7 +37,7 @@ void Position::move(Direction direction) {
     break;
   }
 
-  switch (absoluteDir) {
+  switch (direction) {
   case Direction::Right:
   case Direction::ForwardRight:
   case Direction::BackwardRight:
@@ -60,8 +57,4 @@ void Position::move(Direction direction) {
   default:
     break;
   }
-}
-
-void Position::turn(Direction direction) {
-  m_direction = m_direction + direction;
 }

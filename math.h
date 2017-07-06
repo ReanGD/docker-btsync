@@ -35,11 +35,11 @@ Direction operator+(Direction first, Direction second);
 
 struct Position {
   Position() = delete;
-  Position(uint32_t coord, Direction direction);
+  Position(uint32_t coord);
+  operator size_t() const { return m_coord; }
 
   void move(Direction direction);
   void turn(Direction direction);
 
   uint32_t m_coord;
-  Direction m_direction;
 };
