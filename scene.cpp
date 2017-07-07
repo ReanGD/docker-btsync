@@ -2,9 +2,18 @@
 #include "settings.h"
 
 
-Cell::Cell(CellType type)
-  : m_type(type) {
+Cell::Cell(CellType type, Mass mass)
+  : m_type(type)
+  , m_mass(mass) {
 
+}
+
+void Cell::move(Cell& to) {
+  to.m_type = m_type;
+  m_type = CellType::Space;
+
+  to.m_mass += m_mass;
+  m_mass = Mass(0);
 }
 
 Organism::Organism(Position position, Generator& generator)
@@ -48,34 +57,25 @@ void Organism::calc(World* word, const std::array<Cell*, static_cast<size_t>(Dir
 }
 
 World::World()
-  : m_cells(Settings::m_worldMaxCoord, Cell(CellType::Space)) {
+  : m_cells(Settings::m_worldMaxCoord, Cell(CellType::Space, Mass(0))) {
 
-  const size_t botsCount = 500;
-  for(size_t i=0; i!=botsCount; ++i) {
-    while(true) {
-      auto coord = m_random.get(Settings::m_worldMaxCoord);
-      if (m_cells[coord].m_type == CellType::Space) {
-        m_organisms.push_front(std::make_unique<Organism>(Position(coord), m_random));
-        m_cells[coord].m_type = CellType::Organism;
-        break;
-      }
-    }
-  }
+  initOrganisms(500);
+  initFoods(500);
 }
 
 void World::step() {
   for (auto& organism: m_organisms) {
     Position pos = organism->getPosition();
 
-    Cell barrier(CellType::Barrier);
+    Cell barrier(CellType::Barrier, Mass(0));
     std::array<Cell*, static_cast<size_t>(Direction::Last)> cells;
     for(size_t i=0; i!=cells.size(); ++i) {
       Position copyPos = pos;
       copyPos.move(static_cast<Direction>(i));
-      if (copyPos.m_coord == pos.m_coord) {
+      if (copyPos == pos) {
         cells[i] = &barrier;
       } else {
-        cells[i] = &m_cells[copyPos.m_coord];
+        cells[i] = &m_cells[copyPos];
       }
     }
     organism->calc(this, cells);
@@ -84,10 +84,37 @@ void World::step() {
 
 bool World::move(Position from, Position to) {
   if (m_cells[to].m_type == CellType::Space) {
-    m_cells[from].m_type = CellType::Space;
-    m_cells[to].m_type = CellType::Organism;
+    m_cells[from].move(m_cells[to]);
+    m_cells[to].m_mass -= Mass(1);
+    return true;
+  } else if (m_cells[to].m_type == CellType::Food) {
+    m_cells[from].move(m_cells[to]);
     return true;
   }
 
   return false;
+}
+
+Position World::getRandomSpaceCell() const {
+  while(true) {
+    auto coord = m_random.get(Settings::m_worldMaxCoord);
+    if (m_cells[coord].m_type == CellType::Space) {
+      return Position(coord);
+    }
+  }
+}
+
+void World::initOrganisms(uint32_t cnt) {
+  for(size_t i=0; i!=cnt; ++i) {
+    Position coord = getRandomSpaceCell();
+    m_organisms.push_front(std::make_unique<Organism>(coord, m_random));
+    m_cells[coord] = Cell(CellType::Organism, Mass(20));
+  }
+}
+
+void World::initFoods(uint32_t cnt) {
+  for(size_t i=0; i!=cnt; ++i) {
+    Position coord = getRandomSpaceCell();
+    m_cells[coord] = Cell(CellType::Food, Mass(20));
+  }
 }

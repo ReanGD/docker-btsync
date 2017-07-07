@@ -16,7 +16,7 @@ GLWidget::GLWidget(QWidget *parent, std::shared_ptr<World> world)
 
 void GLWidget::drawScene(QPainter* painter) {
   static const size_t cellTypes = static_cast<size_t>(CellType::Last);
-  static const QColor colors[cellTypes] = {Qt::red, Qt::blue, Qt::gray};
+  static const QColor colors[cellTypes] = {Qt::red, Qt::green, Qt::blue, Qt::gray};
   static const QSize botSize = QSize(Settings::m_botSizePixel, Settings::m_botSizePixel);
 
   painter->setPen(Qt::NoPen);

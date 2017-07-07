@@ -28,7 +28,7 @@ Window::Window()
 }
 
 void Window::step() {
-  const uint32_t updatePerStep = 100;
+  const uint32_t updatePerStep = 200;
   const uint32_t drawPerStep = 5;
 
   if (m_step % updatePerStep == 0) {
@@ -50,5 +50,5 @@ void Window::step() {
     m_glWidget->update();
   }
   m_step++;
-  QTimer::singleShot(10, this, &Window::step);
+  QTimer::singleShot(5, this, &Window::step);
 }

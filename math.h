@@ -43,3 +43,12 @@ struct Position {
 
   uint32_t m_coord;
 };
+
+struct Mass {
+  Mass() = delete;
+  Mass(uint32_t value);
+  Mass& operator+=(const Mass& other);
+  Mass& operator-=(const Mass& other);
+
+  uint16_t m_value;
+};

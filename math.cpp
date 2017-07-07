@@ -58,3 +58,22 @@ void Position::move(Direction direction) {
     break;
   }
 }
+
+Mass::Mass(uint32_t value)
+  : m_value(value) {
+
+}
+
+Mass& Mass::operator+=(const Mass &other) {
+  m_value += other.m_value;
+  return *this;
+}
+
+Mass& Mass::operator-=(const Mass &other) {
+  if (m_value >= other.m_value) {
+    m_value -= other.m_value;
+  } else {
+    m_value = 0;
+  }
+  return *this;
+}
