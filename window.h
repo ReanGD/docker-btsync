@@ -21,5 +21,8 @@ private:
     QLabel *m_bottomInfo;
 
     uint32_t m_step = 0;
+    uint32_t m_localStep = 0;
     std::chrono::steady_clock::time_point m_start;
+
+    uint32_t m_drawPerStep = 200;
 };

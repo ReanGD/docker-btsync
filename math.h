@@ -39,7 +39,6 @@ struct Position {
   operator size_t() const { return m_coord; }
 
   void move(Direction direction);
-  void turn(Direction direction);
 
   uint32_t m_coord;
 };

@@ -29,9 +29,12 @@ struct Organism {
   Organism() = delete;
   Organism(Position position, Generator& generator);
 
-  void calc(World* word, const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells);
+  void cloneFrom(Organism* parent, Position position, Generator& generator);
+  void calc(World* word, Cell& currentCell, const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells);
   Position getPosition() const { return m_position; }
+  bool isDied() const { return m_died; }
 private:
+  bool m_died;
   Position m_position;
   Direction m_direction;
   NeuralNetwork m_network;
@@ -41,15 +44,21 @@ class World {
 public:
   World();
 public:
+  void addFood();
   void step();
-  bool move(Position from, Position to);
+
   const std::vector<Cell>& cells() { return m_cells; }
+  Cell& getCell(Position pos) { return m_cells[pos]; }
+  uint32_t getGenerationStepLife() const { return m_lastGenerationLife; }
 private:
   Position getRandomSpaceCell() const;
   void initOrganisms(uint32_t cnt);
-  void initFoods(uint32_t cnt);
+  void reinitOrganisms();
 private:
   mutable Generator m_random;
+  uint32_t m_currentGenerationLife = 0;
+  uint32_t m_lastGenerationLife = 0;
+  uint32_t m_cntOrganisms;
   std::vector<Cell> m_cells;
   std::forward_list<std::unique_ptr<Organism>> m_organisms;
 };

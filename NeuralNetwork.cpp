@@ -6,8 +6,20 @@ Neuron::Neuron(uint16_t inputCnt, Generator& generator)
   , m_weights(new float[inputCnt]) {
 
   float *ptr = m_weights.get();
-  for (uint16_t i=0; i!=inputCnt; ++i) {
+  for (uint16_t i=0; i!=m_inputCnt; ++i) {
     ptr[i] = generator.getf(1.0f);
+  }
+}
+
+void Neuron::cloneFrom(Neuron &parent, Generator &generator) {
+  float *ptr = m_weights.get();
+  float *parentPtr = parent.m_weights.get();
+  for (uint16_t i=0; i!=m_inputCnt; ++i) {
+    if (generator.get(10) == 0) {
+      ptr[i] = generator.getf(1.0f);
+    } else {
+      ptr[i] = parentPtr[i];
+    }
   }
 }
 
@@ -29,6 +41,12 @@ Layer::Layer(uint16_t inputCnt, uint16_t neuronCnt, Generator& generator) {
   }
 }
 
+void Layer::cloneFrom(Layer& parent, Generator &generator) {
+  for (size_t i=0; i!=m_neurons.size(); ++i) {
+    m_neurons[i].cloneFrom(parent.m_neurons[i], generator);
+  }
+}
+
 std::shared_ptr<float[]> Layer::calc(const std::shared_ptr<float[]> &inputs) {
   auto output = std::shared_ptr<float[]>(new float[m_neurons.size()]);
   uint16_t i=0;
@@ -42,6 +60,11 @@ NeuralNetwork::NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, Genera
   : m_layer0(inputCnt, neuronLayer0Cnt, generator)
   , m_output(neuronLayer0Cnt, generator) {
 
+}
+
+void NeuralNetwork::cloneFrom(NeuralNetwork &parent, Generator &generator) {
+  m_layer0.cloneFrom(parent.m_layer0, generator);
+  m_output.cloneFrom(parent.m_output, generator);
 }
 
 float NeuralNetwork::calc(const std::shared_ptr<float[]> &inputs) {
