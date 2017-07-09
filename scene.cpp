@@ -41,24 +41,14 @@ void Organism::calc(World* word, Cell& currentCell, const std::array<Cell*, stat
     inputs[i++] = static_cast<float>(cell->m_type) / static_cast<float>(CellType::Last);
   }
 
-  float result = m_network.calc(inputs);
-  Direction directionMove;
-  if (result < 1.0f/8.0f) {
-    directionMove = Direction::Forward;
-  } else if (result < 2.0f/8.0f) {
-    directionMove = Direction::ForwardRight;
-  } else if (result < 3.0f/8.0f) {
-    directionMove = Direction::Right;
-  } else if (result < 4.0f/8.0f) {
-    directionMove = Direction::BackwardRight;
-  } else if (result < 5.0f/8.0f) {
-    directionMove = Direction::Backward;
-  } else if (result < 6.0f/8.0f) {
-    directionMove = Direction::BackwardLeft;
-  } else if (result < 7.0f/8.0f) {
-    directionMove = Direction::Left;
-  } else {
-    directionMove = Direction::ForwardLeft;
+  std::shared_ptr<float[]> result = m_network.calc(inputs);
+  Direction directionMove = Direction::Forward;
+  float maxValue = 0.0f;
+  for (uint32_t i=0; i!=static_cast<uint32_t>(Direction::Last); ++i) {
+    if (result.get()[i] > maxValue) {
+      maxValue = result.get()[i];
+      directionMove = static_cast<Direction>(i);
+    }
   }
 
   Position newPosition = m_position;
@@ -108,12 +98,13 @@ void World::step() {
       continue;
     }
     Position pos = organism->getPosition();
+    Direction dir = organism->getDirection();
 
     Cell barrier(CellType::Barrier, Mass(0));
     std::array<Cell*, static_cast<size_t>(Direction::Last)> cells;
     for(size_t i=0; i!=cells.size(); ++i) {
       Position copyPos = pos;
-      copyPos.move(static_cast<Direction>(i));
+      copyPos.move(static_cast<Direction>(i) + dir);
       if (copyPos == pos) {
         cells[i] = &barrier;
       } else {
@@ -152,6 +143,7 @@ void World::initOrganisms(uint32_t cnt) {
 }
 
 void World::reinitOrganisms() {
+  m_generation++;
   m_lastGenerationLife = m_currentGenerationLife;
   m_currentGenerationLife = 0;
   std::array<Organism*, 10> survivors;

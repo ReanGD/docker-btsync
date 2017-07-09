@@ -32,9 +32,8 @@ public:
   NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, Generator& generator);
 public:
   void cloneFrom(NeuralNetwork& parent, Generator& generator);
-  float calc(const std::shared_ptr<float[]>& inputs);
+  const std::shared_ptr<float[]> calc(const std::shared_ptr<float[]>& inputs);
 private:
   Layer m_layer0;
-  Neuron m_output;
 };
 

@@ -11,7 +11,9 @@ Window::Window()
   : m_world(std::make_shared<World>())
   , m_glWidget(new GLWidget(this, m_world))
   , m_topInfo(new QLabel(this))
-  , m_bottomInfo(new QLabel(this)) {
+  , m_bottomInfo(new QLabel(this))
+  , m_worldStep(0)
+  , m_thread([this](){ worldStart(); }) {
 
   setWindowTitle(tr("Evolution"));
 
@@ -24,40 +26,35 @@ Window::Window()
   setLayout(layout);
 
   m_start = std::chrono::steady_clock::now();
-  QTimer::singleShot(0, this, &Window::step);
+  QTimer::singleShot(10, this, &Window::step);
 }
 
 void Window::step() {
-  const uint32_t updatePerStep = 4000;
-  m_localStep++;
-
-  if (m_localStep % updatePerStep == 0) {
-    m_localStep = 0;
+  if (m_step % 60 == 0) {
     auto now = std::chrono::steady_clock::now();
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_start).count();
-    float sps = (updatePerStep * 1000.0f / static_cast<float>(ms));
-    float ups = (updatePerStep * 1000.0f / (m_drawPerStep * static_cast<float>(ms)));
-    float fps = m_glWidget->getFps();
-    if (ups > 300.0f) {
-      m_drawPerStep+=10;
-    } else if (ups > 30.0f) {
-      m_drawPerStep++;
-    } else if (ups < 30.0f) {
-      m_drawPerStep--;
-    }
+    auto dtSec = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(now - m_start).count()) / 1000.0f;
     m_start = now;
-    m_topInfo->setText("Step: " + QString::number(m_step) + " (" +
-                       QString::number(sps, 'f', 2) + " step/sec, " +
-                       QString::number(ups, 'f', 2) + " update/sec, " +
-                       QString::number(fps, 'f', 2) + " frame/sec)\n" +
-                       "Generation life: " + QString::number(m_world->getGenerationStepLife()) + " step");
+
+    uint32_t nowWorldStep = m_worldStep;
+    float sps = (nowWorldStep - m_startWorldStep) / dtSec;
+    m_startWorldStep = nowWorldStep;
+
+    QString generation = QString::number(m_world->getGeneration());
+    QString life = QString::number(m_world->getGenerationStepLife());
+
+    m_topInfo->setText("Step: " + QString::number(nowWorldStep / 1000) + "x10^3 (" + QString::number(sps, 'f', 2) + " step/sec)\n" +
+                       "Fps: " + QString::number(m_glWidget->getFps(), 'f', 2) + "\n"
+                       "Generation: " + generation + " (life: " + life + " step)");
   }
 
-  m_world->step();
-
-  if (m_localStep % m_drawPerStep == 0) {
-    m_glWidget->update();
-  }
   m_step++;
-  QTimer::singleShot(0, this, &Window::step);
+  m_glWidget->update();
+  QTimer::singleShot(40, this, &Window::step);
+}
+
+void Window::worldStart() {
+  while (true) {
+    m_world->step();
+    m_worldStep++;
+  }
 }

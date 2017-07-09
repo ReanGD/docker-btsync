@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <memory>
+#include <thread>
 #include <QWidget>
 
 class World;
@@ -9,20 +10,23 @@ class QLabel;
 class GLWidget;
 
 class Window : public QWidget {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    Window();
+  Window();
 private slots:
-    void step();
+  void step();
 private:
-    std::shared_ptr<World> m_world;
-    GLWidget *m_glWidget;
-    QLabel *m_topInfo;
-    QLabel *m_bottomInfo;
+  void worldStart();
+private:
+  std::shared_ptr<World> m_world;
+  GLWidget *m_glWidget;
+  QLabel *m_topInfo;
+  QLabel *m_bottomInfo;
 
-    uint32_t m_step = 0;
-    uint32_t m_localStep = 0;
-    std::chrono::steady_clock::time_point m_start;
+  uint32_t m_step = 0;
+  std::chrono::steady_clock::time_point m_start;
 
-    uint32_t m_drawPerStep = 200;
+  uint32_t m_startWorldStep = 0;
+  std::atomic_uint32_t m_worldStep;
+  std::thread m_thread;
 };

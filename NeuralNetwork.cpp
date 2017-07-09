@@ -57,16 +57,14 @@ std::shared_ptr<float[]> Layer::calc(const std::shared_ptr<float[]> &inputs) {
 }
 
 NeuralNetwork::NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, Generator& generator)
-  : m_layer0(inputCnt, neuronLayer0Cnt, generator)
-  , m_output(neuronLayer0Cnt, generator) {
+  : m_layer0(inputCnt, neuronLayer0Cnt, generator) {
 
 }
 
 void NeuralNetwork::cloneFrom(NeuralNetwork &parent, Generator &generator) {
   m_layer0.cloneFrom(parent.m_layer0, generator);
-  m_output.cloneFrom(parent.m_output, generator);
 }
 
-float NeuralNetwork::calc(const std::shared_ptr<float[]> &inputs) {
-  return m_output.calc(m_layer0.calc(inputs));
+const std::shared_ptr<float[]> NeuralNetwork::calc(const std::shared_ptr<float[]> &inputs) {
+  return m_layer0.calc(inputs);
 }
