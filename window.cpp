@@ -14,19 +14,7 @@ Window::Window()
   , m_bottomInfo(new QLabel(this))
   , m_worldStep(0)
   , m_thread([this](){ worldStart(); }) {
-
-  setWindowTitle(tr("Evolution"));
-
-  m_topInfo->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
-
-  QGridLayout *layout = new QGridLayout;
-  layout->addWidget(m_topInfo, 0, 0);
-  layout->addWidget(m_glWidget, 1, 0);
-  layout->addWidget(m_bottomInfo, 2, 0);
-  setLayout(layout);
-
-  m_start = std::chrono::steady_clock::now();
-  QTimer::singleShot(10, this, &Window::step);
+  init0();
 }
 
 void Window::step() {
@@ -50,6 +38,58 @@ void Window::step() {
   m_step++;
   m_glWidget->update();
   QTimer::singleShot(40, this, &Window::step);
+}
+
+void Window::init0() {
+  setWindowTitle(tr("Evolution"));
+
+  m_topInfo->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+
+  QGridLayout *layout = new QGridLayout;
+  layout->addWidget(m_topInfo, 0, 0);
+  layout->addWidget(m_glWidget, 1, 0);
+  layout->addWidget(m_bottomInfo, 2, 0);
+  setLayout(layout);
+
+  m_start = std::chrono::steady_clock::now();
+  QTimer::singleShot(10, this, &Window::step);
+}
+
+void Window::init1() {
+  setWindowTitle(tr("Evolution"));
+
+  m_topInfo->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+
+  Generator g;
+  NeuralNetwork n(8, 8, 8, g);
+  auto inputs = std::shared_ptr<float[]>(new float[8]);
+  float* inputsPtr = inputs.get();
+  QString str;
+  for (int i=0; i!=8; ++i) {
+    for (int j=0; j!=8; ++j) {
+      if (j == i) {
+        inputsPtr[j] = 1.0f;
+      } else {
+        inputsPtr[j] = 0.0f;
+      }
+    }
+    auto output = n.calc(inputs);
+    float* outputPtr = output.get();
+    QString in;
+    QString out;
+
+    for (int j=0; j!=8; ++j) {
+      in += QString::number(inputsPtr[j], 'f', 2) + ",";
+      out += QString::number(outputPtr[j], 'f', 2) + ",";
+    }
+    str += in + "==" + out + "\n";
+  }
+  m_topInfo->setText(str);
+
+  QGridLayout *layout = new QGridLayout;
+  layout->addWidget(m_topInfo, 0, 0);
+  setLayout(layout);
+
 }
 
 void Window::worldStart() {

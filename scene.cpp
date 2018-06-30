@@ -4,7 +4,7 @@
 static const Mass baseOrgamismMass = Mass(100);
 static const Mass baseFoodMass = Mass(10);
 static const uint32_t foodCnt = 400;
-static const uint32_t maxOrgamismCnt = 300;
+static const uint32_t maxOrgamismCnt = 150;
 
 Cell::Cell(CellType type, Mass mass)
   : m_type(type)
@@ -23,26 +23,43 @@ void Cell::move(Cell& to) {
 Organism::Organism(Position position, Generator& generator)
   : m_died(false)
   , m_position(position)
-  , m_direction(generator.get(Direction::Last))
-  , m_network(8, 8, generator) {
+  //, m_direction(generator.get(Direction::Last))
+  , m_direction(Direction::Forward)
+//  , m_network(static_cast<size_t>(Direction::Last) * static_cast<size_t>(CellType::Last), static_cast<size_t>(Direction::Last) * static_cast<size_t>(CellType::Last), 8, generator) {
+  , m_network(static_cast<size_t>(Direction::Last), static_cast<size_t>(Direction::Last), 8, generator) {
 }
 
 void Organism::cloneFrom(Organism *parent, Position position, Generator &generator) {
   m_died = false;
   m_position = position;
   m_direction = generator.get(Direction::Last);
+  m_direction = Direction::Forward;
   m_network.cloneFrom(parent->m_network, generator);
 }
 
 void Organism::calc(World* word, Cell& currentCell, const std::array<Cell*, static_cast<size_t>(Direction::Last)>& cells) {
+
+//  auto inputs = std::shared_ptr<float[]>(new float[static_cast<size_t>(Direction::Last) * static_cast<size_t>(CellType::Last)]);
   auto inputs = std::shared_ptr<float[]>(new float[static_cast<size_t>(Direction::Last)]);
   size_t i=0;
   for (const auto cell :cells) {
-    inputs[i++] = static_cast<float>(cell->m_type) / static_cast<float>(CellType::Last);
+//    for(uint32_t cellType=0; cellType!=static_cast<uint32_t>(CellType::Last); ++cellType) {
+//      if (static_cast<uint32_t>(cell->m_type) == cellType) {
+//        inputs[i++] = 1.0f;
+//      } else {
+//        inputs[i++] = 0.0f;
+//      }
+//    }
+          if (cell->m_type == CellType::Food) {
+            inputs[i++] = 1.0f;
+          } else {
+            inputs[i++] = 0.0f;
+          }
+
   }
 
   std::shared_ptr<float[]> result = m_network.calc(inputs);
-  Direction directionMove = Direction::Forward;
+  Direction directionMove = Direction::Left;
   float maxValue = 0.0f;
   for (uint32_t i=0; i!=static_cast<uint32_t>(Direction::Last); ++i) {
     if (result.get()[i] > maxValue) {

@@ -16,6 +16,8 @@ public:
 private slots:
   void step();
 private:
+  void init0();
+  void init1();
   void worldStart();
 private:
   std::shared_ptr<World> m_world;

@@ -29,11 +29,12 @@ private:
 
 class NeuralNetwork {
 public:
-  NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, Generator& generator);
+  NeuralNetwork(uint16_t inputCnt, uint16_t neuronLayer0Cnt, uint16_t neuronLayer1Cnt, Generator& generator);
 public:
   void cloneFrom(NeuralNetwork& parent, Generator& generator);
   const std::shared_ptr<float[]> calc(const std::shared_ptr<float[]>& inputs);
 private:
   Layer m_layer0;
+  Layer m_layer1;
 };
 
